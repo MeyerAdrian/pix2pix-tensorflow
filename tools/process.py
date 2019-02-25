@@ -267,6 +267,7 @@ def main():
     if a.workers == 1:
         with tf.Session() as sess:
             for src_path, dst_path in zip(src_paths, dst_paths):
+                print (100*'::::')
                 process(src_path, dst_path)
                 complete()
     else:
@@ -277,6 +278,7 @@ def main():
             with sess.as_default():
                 while not coord.should_stop():
                     try:
+                        print (100*'""""""""""""""')
                         src_path, dst_path = sess.run(dequeue_op)
                     except tf.errors.OutOfRangeError:
                         coord.request_stop()

@@ -13,15 +13,9 @@ import collections
 import math
 import time
 
-import cv2
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_dir", help="path to folder containing images")
 parser.add_argument("--mode", required=True, choices=["train", "test", "export"])
-
-####### change res
-parser.add_argument("--res", required=False, choices=["256", "512", "1024"], default="256")
-
 parser.add_argument("--output_dir", required=True, help="where to put output files")
 parser.add_argument("--seed", type=int)
 parser.add_argument("--checkpoint", default=None, help="directory with checkpoint to resume training from or use for testing")
@@ -41,10 +35,7 @@ parser.add_argument("--batch_size", type=int, default=1, help="number of images 
 parser.add_argument("--which_direction", type=str, default="AtoB", choices=["AtoB", "BtoA"])
 parser.add_argument("--ngf", type=int, default=64, help="number of generator filters in first conv layer")
 parser.add_argument("--ndf", type=int, default=64, help="number of discriminator filters in first conv layer")
-
-####### change res
-parser.add_argument("--scale_size", type=int, default=256, help="scale images to this size before cropping to format")
-
+parser.add_argument("--scale_size", type=int, default=286, help="scale images to this size before cropping to 256x256")
 parser.add_argument("--flip", dest="flip", action="store_true", help="flip images horizontally")
 parser.add_argument("--no_flip", dest="flip", action="store_false", help="don't flip images horizontally")
 parser.set_defaults(flip=True)
@@ -58,27 +49,7 @@ parser.add_argument("--output_filetype", default="png", choices=["png", "jpeg"])
 a = parser.parse_args()
 
 EPS = 1e-12
-
-
-
-####### change res
-
-"""
-first_img_path = os.listdir(a.input_dir)[0]
-first_img_path = os.path.join(a.input_dir, first_img_path)
-
-first_img = cv2.imread(first_img_path, 1)
-img_res = int(first_img.shape[0])
-
-print("Image Resolution detected and set to: " + str(img_res))
-"""
-
-#replace with img_res
-
-a.scale_size = int(a.res)
-CROP_SIZE = int(a.res)
-
-
+CROP_SIZE = 256
 
 Examples = collections.namedtuple("Examples", "paths, inputs, targets, count, steps_per_epoch")
 Model = collections.namedtuple("Model", "outputs, predict_real, predict_fake, discrim_loss, discrim_grads_and_vars, gen_loss_GAN, gen_loss_L1, gen_grads_and_vars, train")
@@ -352,126 +323,42 @@ def load_examples():
     )
 
 
-####### change res
-
 def create_generator(generator_inputs, generator_outputs_channels):
     layers = []
-    
-    #ENCODER
 
     # encoder_1: [batch, 256, 256, in_channels] => [batch, 128, 128, ngf]
     with tf.variable_scope("encoder_1"):
-        #output = conv(generator_inputs, a.ngf, stride=2)
         output = gen_conv(generator_inputs, a.ngf)
         layers.append(output)
-     
-    
-    #ENCODER SETTINGS
 
-
-    
-    #256
-    if (int(a.res) == 256):
-        layer_specs = [
-            a.ngf * 2, # encoder_2: [batch, 128, 128, ngf] => [batch, 64, 64, ngf * 2]
-            a.ngf * 4, # encoder_3: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
-            a.ngf * 8, # encoder_4: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
-            a.ngf * 8, # encoder_5: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
-            a.ngf * 8, # encoder_6: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
-            a.ngf * 8, # encoder_7: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
-            a.ngf * 8, # encoder_8: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
-        ]
-    
-
-   
-    #512
-    if (int(a.res) == 512):
-        layer_specs = [
-            a.ngf * 2, # encoder_2: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
-            a.ngf * 4, # encoder_3: [batch, 128, 128, ngf * 4] => [batch, 64, 64, ngf * 8]
-            a.ngf * 8, # encoder_4: [batch, 64, 64, ngf * 4] => [batch, 32, 32, ngf * 8]
-            a.ngf * 8, # encoder_5: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
-            a.ngf * 16, # encoder_6: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
-            a.ngf * 16, # encoder_7: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
-            a.ngf * 16, # encoder_8: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
-            a.ngf * 16, # encoder_9: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
-        ]
-    
-    
-
-    #1024
-    if (int(a.res) == 1024):    
-        layer_specs = [
-            a.ngf * 2, # encoder_2: [batch, 512, 512, ngf] => [batch, 256, 256, ngf * 2]
-            a.ngf * 4, # encoder_3: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
-            a.ngf * 8, # encoder_4: [batch, 128, 128, ngf * 4] => [batch, 64, 64, ngf * 8]
-            a.ngf * 8, # encoder_4: [batch, 64, 64, ngf * 4] => [batch, 32, 32, ngf * 8]
-            a.ngf * 16, # encoder_4: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
-            a.ngf * 16, # encoder_5: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
-            a.ngf * 16, # encoder_6: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
-            a.ngf * 16, # encoder_7: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
-            a.ngf * 32, # encoder_8: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
-        ]
-  
-    
-    
-
-    #DECODER
+    layer_specs = [
+        a.ngf * 2, # encoder_2: [batch, 128, 128, ngf] => [batch, 64, 64, ngf * 2]
+        a.ngf * 4, # encoder_3: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
+        a.ngf * 8, # encoder_4: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
+        a.ngf * 8, # encoder_5: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
+        a.ngf * 8, # encoder_6: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
+        a.ngf * 8, # encoder_7: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
+        a.ngf * 8, # encoder_8: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
+    ]
 
     for out_channels in layer_specs:
         with tf.variable_scope("encoder_%d" % (len(layers) + 1)):
             rectified = lrelu(layers[-1], 0.2)
             # [batch, in_height, in_width, in_channels] => [batch, in_height/2, in_width/2, out_channels]
-            #convolved = conv(rectified, out_channels, stride=2)
             convolved = gen_conv(rectified, out_channels)
             output = batchnorm(convolved)
             layers.append(output)
-    
 
+    layer_specs = [
+        (a.ngf * 8, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
+        (a.ngf * 8, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
+        (a.ngf * 8, 0.5),   # decoder_6: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
+        (a.ngf * 8, 0.0),   # decoder_5: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
+        (a.ngf * 4, 0.0),   # decoder_4: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 4 * 2]
+        (a.ngf * 2, 0.0),   # decoder_3: [batch, 32, 32, ngf * 4 * 2] => [batch, 64, 64, ngf * 2 * 2]
+        (a.ngf, 0.0),       # decoder_2: [batch, 64, 64, ngf * 2 * 2] => [batch, 128, 128, ngf * 2]
+    ]
 
-    #DECODER SETTINGS
-
-    #256
-    if (int(a.res) == 256):
-        layer_specs = [
-            (a.ngf * 8, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_6: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
-            (a.ngf * 8, 0.0),   # decoder_5: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
-            (a.ngf * 4, 0.0),   # decoder_4: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 4 * 2]
-            (a.ngf * 2, 0.0),   # decoder_3: [batch, 32, 32, ngf * 4 * 2] => [batch, 64, 64, ngf * 2 * 2]
-            (a.ngf, 0.0),       # decoder_2: [batch, 64, 64, ngf * 2 * 2] => [batch, 128, 128, ngf * 2]
-        ]
-    
-    #512
-    if (int(a.res) == 512):
-        layer_specs = [
-            (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_6: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_5: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_5: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_5: [batch, 32, 32, ngf * 8 * 2] => [batch, 64, 64, ngf * 8 * 2]
-            (a.ngf * 4, 0.0),   # decoder_4: [batch, 64, 64, ngf * 8 * 2] => [batch, 128, 128, ngf * 4 * 2]
-            (a.ngf * 2, 0.0),   # decoder_3: [batch, 128, 128, ngf * 4 * 2] => [batch, 256, 256, ngf * 2 * 2]
-        ]
-   
-    #1024
-    if (int(a.res) == 1024):    
-        layer_specs = [
-            (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_6: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
-            (a.ngf * 16, 0.5),   # decoder_5: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_5: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 8 * 2]
-            (a.ngf * 8, 0.5),   # decoder_5: [batch, 32, 32, ngf * 8 * 2] => [batch, 64, 64, ngf * 8 * 2]
-            (a.ngf * 4, 0.0),   # decoder_4: [batch, 64, 64, ngf * 8 * 2] => [batch, 128, 128, ngf * 4 * 2]
-            (a.ngf * 2, 0.0),   # decoder_3: [batch, 128, 128, ngf * 4 * 2] => [batch, 256, 256, ngf * 2 * 2]
-            (a.ngf, 0.0),       # decoder_2: [batch, 256, 256, ngf * 2 * 2] => [batch, 512, 512, ngf * 2]
-       ]
-
-
-   
     num_encoder_layers = len(layers)
     for decoder_layer, (out_channels, dropout) in enumerate(layer_specs):
         skip_layer = num_encoder_layers - decoder_layer - 1
@@ -482,27 +369,25 @@ def create_generator(generator_inputs, generator_outputs_channels):
                 input = layers[-1]
             else:
                 input = tf.concat([layers[-1], layers[skip_layer]], axis=3)
- 
+
             rectified = tf.nn.relu(input)
             # [batch, in_height, in_width, in_channels] => [batch, in_height*2, in_width*2, out_channels]
-            #output = deconv(rectified, out_channels)
             output = gen_deconv(rectified, out_channels)
             output = batchnorm(output)
- 
+
             if dropout > 0.0:
                 output = tf.nn.dropout(output, keep_prob=1 - dropout)
- 
+
             layers.append(output)
- 
+
     # decoder_1: [batch, 128, 128, ngf * 2] => [batch, 256, 256, generator_outputs_channels]
     with tf.variable_scope("decoder_1"):
         input = tf.concat([layers[-1], layers[0]], axis=3)
         rectified = tf.nn.relu(input)
-        # output = deconv(rectified, generator_outputs_channels)
         output = gen_deconv(rectified, generator_outputs_channels)
         output = tf.tanh(output)
         layers.append(output)
- 
+
     return layers[-1]
 
 
@@ -823,16 +708,8 @@ def main():
     saver = tf.train.Saver(max_to_keep=1)
 
     logdir = a.output_dir if (a.trace_freq > 0 or a.summary_freq > 0) else None
-
-
-    #allowing memory increasing
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-
-
-
     sv = tf.train.Supervisor(logdir=logdir, save_summaries_secs=0, saver=None)
-    with sv.managed_session(config=config) as sess:
+    with sv.managed_session() as sess:
         print("parameter_count =", sess.run(parameter_count))
 
         if a.checkpoint is not None:
