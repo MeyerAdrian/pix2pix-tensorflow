@@ -101,6 +101,7 @@ if __name__ == "__main__":
                         dest='res',
                         help='Image Resolution',
                         required=False,
+                        type=int,
                         choices=[256, 512, 1024],
                         default=256)
 

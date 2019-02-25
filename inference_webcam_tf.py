@@ -21,7 +21,9 @@ def inference_cam(input_model, res, *args):
 
         #resize
 
-        target_size = int(res)
+        ##### get res from input model dir
+
+        target_size = res
         frame_rec = frame.shape
         frame_height = frame_rec[0]
         frame_width = frame_rec[1]
@@ -107,8 +109,9 @@ if __name__ == "__main__":
                         dest='res',
                         help='Image Resolution',
                         required=False,
-                        choices=["256", "512", "1024"],
-                        default="256")
+                        type=int,
+                        choices=[256, 512, 1024],
+                        default=256)
 
     
     results = parser.parse_args()

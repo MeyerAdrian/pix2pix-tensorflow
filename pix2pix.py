@@ -22,7 +22,7 @@ parser.add_argument("--input_dir", help="path to folder containing images")
 parser.add_argument("--mode", required=True, choices=["train", "test", "export"])
 
 ####### change res
-parser.add_argument("--res", required=False, choices=["256", "512", "1024"], default="256")
+parser.add_argument("--res", required=False, type=int, choices=[256, 512, 1024], default=256)
 
 parser.add_argument("--output_dir", required=True, help="where to put output files")
 parser.add_argument("--seed", type=int)
@@ -63,22 +63,25 @@ EPS = 1e-12
 
 
 
-####### change res
-
-"""
+####### auto detect res
+'''
 first_img_path = os.listdir(a.input_dir)[0]
 first_img_path = os.path.join(a.input_dir, first_img_path)
 
 first_img = cv2.imread(first_img_path, 1)
 img_res = int(first_img.shape[0])
 
-print("Image Resolution detected and set to: " + str(img_res))
-"""
+print("\nImage Resolution detected and set to:", str(img_res), "px\n")
 
-#replace with img_res
+a.scale_size = img_res
+CROP_SIZE = img_res
+'''
 
-a.scale_size = int(a.res)
-CROP_SIZE = int(a.res)
+
+img_res =a.res
+a.scale_size = img_res
+CROP_SIZE = img_res
+
 
 
 
@@ -373,7 +376,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
     
     #256
-    if (int(a.res) == 256):
+    if (img_res == 256):
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 128, 128, ngf] => [batch, 64, 64, ngf * 2]
             a.ngf * 4, # encoder_3: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
@@ -387,7 +390,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
    
     #512
-    if (int(a.res) == 512):
+    if (img_res == 512):
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
             a.ngf * 4, # encoder_3: [batch, 128, 128, ngf * 4] => [batch, 64, 64, ngf * 8]
@@ -402,7 +405,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
     
 
     #1024
-    if (int(a.res) == 1024):    
+    if (img_res == 1024):    
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 512, 512, ngf] => [batch, 256, 256, ngf * 2]
             a.ngf * 4, # encoder_3: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
@@ -434,7 +437,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
     #DECODER SETTINGS
 
     #256
-    if (int(a.res) == 256):
+    if (img_res == 256):
         layer_specs = [
             (a.ngf * 8, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 8, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
@@ -446,7 +449,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
         ]
     
     #512
-    if (int(a.res) == 512):
+    if (img_res == 512):
         layer_specs = [
             (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
@@ -459,7 +462,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
         ]
    
     #1024
-    if (int(a.res) == 1024):    
+    if (img_res == 1024):    
         layer_specs = [
             (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
