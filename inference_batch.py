@@ -16,7 +16,8 @@ import merge_sbs_batch
 
 def local_inference(input_model, use_sbs, input_dir, input_dir_label, output_dir, output_dir_sbs, *args):
     
-    print ("local inference started")
+    print("\n")
+    print("\nLocal inference started")
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
 
@@ -50,7 +51,7 @@ def local_inference(input_model, use_sbs, input_dir, input_dir_label, output_dir
             input_file = os.path.join(input_dir, i)
 
             start = time.time()
-            print ("local inference get {0}".format(input_file))
+            #print ("local inference get {0}".format(input_file))
             # if input_file:
             with open(input_file, "rb") as f:
                 input_data = f.read()
@@ -71,17 +72,17 @@ def local_inference(input_model, use_sbs, input_dir, input_dir_label, output_dir
 
             output_file = os.path.join(output_dir, i.replace(".jpg", ".png"))
             with open(output_file, "wb") as f:
-                print ("local inference open file {0}".format(output_file))
+                #print ("local inference open file {0}".format(output_file))
                 f.write(output_data)
 
-            print ("local inference sent {0}".format(output_file))
-            print (time.time() - start)
+            print ("Inference Image created: {0}".format(output_file))
+            print ("Time to process:", time.time() - start)
 
 
     #merge sbs images
 
     if (use_sbs == 1):
-        merge_sbs_batch.merge_sbs_batch(input_dir, input_dir_label, output_dir, output_dir_sbs)
+        merge_sbs_batch.merge_sbs_batch(input_dir_label, input_dir, output_dir, output_dir_sbs)
 
 
 
@@ -125,3 +126,4 @@ if __name__ == "__main__":
                     results.input_dir_label,
                     results.output_dir,
                     results.output_dir_sbs)
+    

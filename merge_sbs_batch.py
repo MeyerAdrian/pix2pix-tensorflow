@@ -12,21 +12,22 @@ import time
 
 def merge_sbs_batch(image_dir_a, image_dir_b, image_dir_c, output_dir, *args):
 
-    '''
+
     print("\n")
-    print(image_dir_a)
-    print(image_dir_b)
+    print("\nStart SBS Merging of Images")
+    print("Image A Directory:", image_dir_a)
+    print("Image B Directory:", image_dir_b)
 
     if (image_dir_c != None):
-        print(image_dir_c)
+        print("Image C Directory:", image_dir_c, "\n")
     else:
-        print("No C Image Dir")
+        print("No C Image Dir\n")
 
-    '''
+    
 
     a_images = iter(os.listdir(image_dir_a))
     b_images = iter(os.listdir(image_dir_b))
-    
+
     if (image_dir_c != None):
         c_images = iter(os.listdir(image_dir_c))
 
@@ -35,23 +36,33 @@ def merge_sbs_batch(image_dir_a, image_dir_b, image_dir_c, output_dir, *args):
 
     while not end_reached:
         try:
-            a = cv2.imread(os.path.join(image_dir_a,next(a_images)))
-            b = cv2.imread(os.path.join(image_dir_b,next(b_images)))
+            file_a = os.path.join(image_dir_a,next(a_images))
+            file_b = os.path.join(image_dir_b,next(b_images))
+
+            a = cv2.imread(file_a)
+            b = cv2.imread(file_b)
+
             if (image_dir_c != None):
                 c = cv2.imread(os.path.join(image_dir_c,next(c_images)))
 
             res = a.shape[1]
 
+            
+            #print(a.shape, b.shape, c.shape)
+
             if (image_dir_c != None):
+
                 image = np.concatenate((a, b, c), axis=1)
-                resized = cv2.resize(image, (res*3, res))
 
             else:
                 image = np.concatenate((a, b), axis=1)
-                resized = cv2.resize(image, (res*2, res))
 
-            cv2.imwrite(os.path.join(output_dir, "{0}.jpg".format(str(n))), resized)
+            image_file = os.path.join(output_dir, "img_sbs_{0}.jpg".format(str(n).zfill(4)))
+            cv2.imwrite(image_file, image)
+            print("SBS Image created:", image_file)
+
             n += 1
+
         except StopIteration:
             end_reached = True
 

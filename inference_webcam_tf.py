@@ -9,7 +9,7 @@ import edge_detect
 import serve
 import json
 
-def inference_cam(input_model, *args):
+def inference_cam(input_model, output_dir, *args):
 
     ##### get res from input model dir
 
@@ -28,6 +28,9 @@ def inference_cam(input_model, *args):
     input_image_queue, output_image_queue, live_process, lifetime_end = serve.process_handler(  input_model,
                                                                                                 out__)
     _last = None
+    n = 1
+    use_preproc = 1
+
     while (True):
         #print (True)
         ret, frame = cam_cap.read()
@@ -55,8 +58,12 @@ def inference_cam(input_model, *args):
         #print (frame.shape)
 
 
+        
+
         #image pre processing, filters
-        frame = edge_detect.edge_detect_filter(frame)
+
+        if (use_preproc):
+            frame = edge_detect.edge_detect_filter(frame)
         
 
 
@@ -86,9 +93,34 @@ def inference_cam(input_model, *args):
         if isinstance(_last, np.ndarray):
             #overwrite frame
             frame = _last
-        #display
-        cv2.imshow('Press "q" to close', frame)
+        
 
+        #display
+        cv2.imshow('Press "q" to close, "s" to Save, "d" to toggle Prepocessing', frame)
+
+
+
+        #write image function
+        if cv2.waitKey(66) == ord('s'):
+
+            image_file = os.path.join(output_dir, "img_{0}.jpg".format(str(n).zfill(4)))
+            cv2.imwrite(image_file, frame)
+
+            print("Snapshot created:", image_file, "\n")
+
+            #increase img counter
+            n += 1
+
+
+        #toggle image preprocesing
+        if cv2.waitKey(66) == ord('d'):
+            if(use_preproc):
+                use_preproc = 0
+            else:
+                use_preproc = 1 
+
+
+        #quit process
         if cv2.waitKey(33) == ord('q'):
             #set value to break BG while loop
             lifetime_end.value = True
@@ -100,7 +132,6 @@ def inference_cam(input_model, *args):
             #break cv
             break
 
-    
 
     #close video capture
     cam_cap.release()
@@ -117,10 +148,15 @@ if __name__ == "__main__":
                         dest='input_model',
                         help='Input Model Dir',
                         required=True)
+    parser.add_argument('-o', '--output_dir',
+                        dest='output_dir',
+                        help='Image Output Dir',
+                        required=True)
 
     
     results = parser.parse_args()
     
 
     #call function
-    inference_cam(results.input_model)
+    inference_cam(results.input_model,
+                    results.output_dir)
