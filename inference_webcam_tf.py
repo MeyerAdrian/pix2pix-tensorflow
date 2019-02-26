@@ -7,8 +7,21 @@ import time
 
 import edge_detect
 import serve
+import json
 
-def inference_cam(input_model, res, *args):
+def inference_cam(input_model, *args):
+
+    ##### get res from input model dir
+
+    options_s = {"scale_size"}
+    with open(os.path.join(input_model, "options.json")) as f:
+        for key, val in json.loads(f.read()).items():
+            if key in options_s:
+                #print("loaded", key, "=", val)
+                img_res = int(val)
+                print("\nModel Resolution retrieved from Exported Model Data and set to:", img_res, "px\n")
+
+
 
     cam_cap = cv2.VideoCapture(1)
     out__ = os.path.join(os.path.dirname(__file__), '_temp_imgs/temp_out.jpg')
@@ -19,11 +32,10 @@ def inference_cam(input_model, res, *args):
         #print (True)
         ret, frame = cam_cap.read()
 
+      
         #resize
 
-        ##### get res from input model dir
-
-        target_size = res
+        target_size = img_res
         frame_rec = frame.shape
         frame_height = frame_rec[0]
         frame_width = frame_rec[1]
@@ -37,15 +49,15 @@ def inference_cam(input_model, res, *args):
         #crop square
         frame = frame[0:target_size, width_offset:(frame_width_s-width_offset)]
 
-
-        #fix that shit
+        #post fix scale
         frame = cv2.resize(frame, (target_size, target_size))
 
-
-        #image pre processing...
-
-        frame = edge_detect.edge_detect_filter(frame)
         #print (frame.shape)
+
+
+        #image pre processing, filters
+        frame = edge_detect.edge_detect_filter(frame)
+        
 
 
         #inference
@@ -105,18 +117,10 @@ if __name__ == "__main__":
                         dest='input_model',
                         help='Input Model Dir',
                         required=True)
-    parser.add_argument('-r', '--res',
-                        dest='res',
-                        help='Image Resolution',
-                        required=False,
-                        type=int,
-                        choices=[256, 512, 1024],
-                        default=256)
 
     
     results = parser.parse_args()
     
 
     #call function
-    inference_cam(results.input_model,
-                    results.res)
+    inference_cam(results.input_model)

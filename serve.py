@@ -37,6 +37,8 @@ def local_inference(input_image_queue,
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+
+
     with tf.Session(config=config) as sess:
 
         saver = tf.train.import_meta_graph(model + "/export.meta")
@@ -47,6 +49,8 @@ def local_inference(input_image_queue,
         
         _input = tf.get_default_graph().get_tensor_by_name(input_vars["input"])
         output = tf.get_default_graph().get_tensor_by_name(output_vars["output"])
+        
+
         while True:
             if not input_image_queue.empty():
                 input_file = input_image_queue.get()
@@ -71,8 +75,12 @@ def local_inference(input_image_queue,
                         f.write(output_data)
                     
                     output_image_queue.put(output_file)
-                    print ('takes: ', time.time() - start)
+
+                    #print how much time each frame takes
+                    #print ('takes: ', time.time() - start)
+
                 except Exception as e:
                     pass
+
             if lifetime_end.value:
                 break

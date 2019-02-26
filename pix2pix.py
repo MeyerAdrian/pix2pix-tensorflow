@@ -22,7 +22,7 @@ parser.add_argument("--input_dir", help="path to folder containing images")
 parser.add_argument("--mode", required=True, choices=["train", "test", "export"])
 
 ####### change res
-parser.add_argument("--res", required=False, type=int, choices=[256, 512, 1024], default=256)
+#parser.add_argument("--res", required=False, type=int, choices=[256, 512, 1024], default=256)
 
 parser.add_argument("--output_dir", required=True, help="where to put output files")
 parser.add_argument("--seed", type=int)
@@ -62,25 +62,30 @@ a = parser.parse_args()
 EPS = 1e-12
 
 
-
-####### auto detect res
 '''
-first_img_path = os.listdir(a.input_dir)[0]
-first_img_path = os.path.join(a.input_dir, first_img_path)
-
-first_img = cv2.imread(first_img_path, 1)
-img_res = int(first_img.shape[0])
-
-print("\nImage Resolution detected and set to:", str(img_res), "px\n")
-
-a.scale_size = img_res
-CROP_SIZE = img_res
-'''
-
-
 img_res =a.res
 a.scale_size = img_res
 CROP_SIZE = img_res
+'''
+
+####### auto detect res in training mode
+
+#init img_res in non train mode
+#img_res = 256
+
+if (a.mode == "train"):
+
+    first_img_path = os.listdir(a.input_dir)[0]
+    first_img_path = os.path.join(a.input_dir, first_img_path)
+
+    first_img = cv2.imread(first_img_path, 1)
+    img_res = int(first_img.shape[0])
+
+    print("\nImage Resolution detected and set to:", str(img_res), "px\n")
+
+    a.scale_size = img_res
+    CROP_SIZE = img_res
+
 
 
 
@@ -376,7 +381,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
     
     #256
-    if (img_res == 256):
+    if (a.scale_size == 256):
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 128, 128, ngf] => [batch, 64, 64, ngf * 2]
             a.ngf * 4, # encoder_3: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
@@ -390,7 +395,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
    
     #512
-    if (img_res == 512):
+    if (a.scale_size == 512):
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
             a.ngf * 4, # encoder_3: [batch, 128, 128, ngf * 4] => [batch, 64, 64, ngf * 8]
@@ -405,7 +410,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
     
 
     #1024
-    if (img_res == 1024):    
+    if (a.scale_size == 1024):    
         layer_specs = [
             a.ngf * 2, # encoder_2: [batch, 512, 512, ngf] => [batch, 256, 256, ngf * 2]
             a.ngf * 4, # encoder_3: [batch, 256, 256, ngf * 2] => [batch, 128, 128, ngf * 4]
@@ -437,7 +442,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
     #DECODER SETTINGS
 
     #256
-    if (img_res == 256):
+    if (a.scale_size == 256):
         layer_specs = [
             (a.ngf * 8, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 8, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
@@ -449,7 +454,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
         ]
     
     #512
-    if (img_res == 512):
+    if (a.scale_size == 512):
         layer_specs = [
             (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
@@ -462,7 +467,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
         ]
    
     #1024
-    if (img_res == 1024):    
+    if (a.scale_size == 1024):    
         layer_specs = [
             (a.ngf * 16, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
             (a.ngf * 16, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
@@ -675,6 +680,23 @@ def main():
                 if key in options:
                     print("loaded", key, "=", val)
                     setattr(a, key, val)
+        
+
+
+        #try to get model res from json file
+        options_s = {"scale_size"}
+        with open(os.path.join(a.checkpoint, "options.json")) as f:
+            for key, val in json.loads(f.read()).items():
+                if key in options_s:
+                    print("loaded", key, "=", val)
+                    img_res = int(val)
+                    print("\nModel Resolution retrieved from Checkpoint Data and set to:", img_res, "\n")
+
+        #set args to retrieved value
+        a.scale_size = img_res
+        CROP_SIZE = img_res
+
+
         # disable these features in test mode
         a.scale_size = CROP_SIZE
         a.flip = False

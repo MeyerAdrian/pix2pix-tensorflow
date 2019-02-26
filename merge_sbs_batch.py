@@ -10,19 +10,23 @@ import time
 
 
 
-def merge_abc_sbs(image_dir_a, image_dir_b, image_dir_c, output_dir, *args):
+def merge_sbs_batch(image_dir_a, image_dir_b, image_dir_c, output_dir, *args):
 
-
+    '''
     print("\n")
     print(image_dir_a)
     print(image_dir_b)
+
     if (image_dir_c != None):
         print(image_dir_c)
     else:
         print("No C Image Dir")
 
+    '''
+
     a_images = iter(os.listdir(image_dir_a))
     b_images = iter(os.listdir(image_dir_b))
+    
     if (image_dir_c != None):
         c_images = iter(os.listdir(image_dir_c))
 
@@ -83,7 +87,7 @@ if __name__ == "__main__":
     
     #run function   
 
-    merge_abc_sbs(results.input_dir_a,
+    merge_sbs_batch(results.input_dir_a,
                     results.input_dir_b,
                     results.input_dir_c,
                     results.output_dir)
