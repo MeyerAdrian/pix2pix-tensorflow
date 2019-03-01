@@ -101,11 +101,12 @@ def inference_cam(input_model, output_dir, *args):
 
         #display
         cv2.imshow('"q" Close, "s" Save, "d" Prepocessing, "f" Inferencing', frame)
+        key = cv2.waitKey(1) & 0xFF
 
 
 
         #write image function
-        if cv2.waitKey(10) == ord('s'):
+        if key == ord('s'):
 
             image_file = os.path.join(output_dir, "img_{0}.jpg".format(str(n).zfill(4)))
             cv2.imwrite(image_file, frame)
@@ -117,7 +118,7 @@ def inference_cam(input_model, output_dir, *args):
 
 
         #toggle image preprocesing
-        if cv2.waitKey(10) == ord('d'):
+        if key == ord('d'):
             if(use_preproc):
                 use_preproc = 0
             else:
@@ -125,7 +126,7 @@ def inference_cam(input_model, output_dir, *args):
 
 
         #toggle inference
-        if cv2.waitKey(10) == ord('f'):
+        if key == ord('f'):
             if(use_inf):
                 use_inf = 0
             else:
@@ -133,7 +134,7 @@ def inference_cam(input_model, output_dir, *args):
 
 
         #quit process
-        if cv2.waitKey(10) == ord('q'):
+        if key == ord('q'):
             #set value to break BG while loop
             lifetime_end.value = True
 

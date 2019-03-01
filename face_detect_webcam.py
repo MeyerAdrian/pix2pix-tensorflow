@@ -9,7 +9,7 @@ import edge_detect
 import serve
 import json
 
-def edge_detect_cam(res, *args):
+def face_detect_cam(res, *args):
 
     cam_cap = cv2.VideoCapture(1)
 
@@ -62,11 +62,12 @@ def edge_detect_cam(res, *args):
         
 
         #display
-        cv2.imshow('"q" Close, "d" Prepocessing', frame)
+        cv2.imshow('"q" Close, "d" Face Detect', frame)
+        key = cv2.waitKey(1) & 0xFF
 
 
         #toggle image preprocesing
-        if cv2.waitKey(10) == ord('d'):
+        if key == ord('d'):
             if(use_preproc):
                 use_preproc = 0
             else:
@@ -74,7 +75,7 @@ def edge_detect_cam(res, *args):
 
 
         #quit process
-        if cv2.waitKey(10) == ord('q'):
+        if key == ord('q'):
 
             #break cv
             break
@@ -89,7 +90,7 @@ def edge_detect_cam(res, *args):
 #arg parser
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Edge Detect Webcam')
+    parser = argparse.ArgumentParser(description='Face Detect Webcam')
 
     parser.add_argument('-r', '--res',
                         dest='res',
@@ -102,4 +103,4 @@ if __name__ == "__main__":
     results = parser.parse_args()
 
     #call function
-    edge_detect_cam(results.res)
+    face_detect_cam(results.res)

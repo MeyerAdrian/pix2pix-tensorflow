@@ -5,16 +5,21 @@ import cv2
 import os
 import time
 
-import edge_detect
 import serve
 import json
 
-def edge_detect_cam(res, *args):
+import face_landmark_detect
+
+def face_landmark_detect_cam(res, *args):
 
     cam_cap = cv2.VideoCapture(1)
 
     use_preproc = 1
     use_blend = 0
+
+    #create bg image first outside loop
+    bg_img = face_landmark_detect.create_bg(res)
+
 
     while (True):
         #print (True)
@@ -47,8 +52,7 @@ def edge_detect_cam(res, *args):
         if (use_preproc):
             
             #run detection function
-            frame_out = edge_detect.edge_detect_filter(frame)
-            frame_out = cv2.cvtColor(frame_out, cv2.COLOR_GRAY2BGR)
+            frame_out = face_landmark_detect.face_landmark_detect(frame, bg_img, res)
 
             if (use_blend):
                 frame_out = cv2.addWeighted(frame, 0.5, frame_out, 0.5, 0)
@@ -59,7 +63,7 @@ def edge_detect_cam(res, *args):
         
 
         #display
-        cv2.imshow('"q" Close, "d" Edge Detect, "b" Blending', frame_out)
+        cv2.imshow('"q" Close, "d" Face Detection, "b" Blending', frame_out)
         key = cv2.waitKey(1) & 0xFF
 
 
@@ -94,7 +98,7 @@ def edge_detect_cam(res, *args):
 #arg parser
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Edge Detect Webcam')
+    parser = argparse.ArgumentParser(description='Face Landmark Detect Webcam')
 
     parser.add_argument('-r', '--res',
                         dest='res',
@@ -107,4 +111,4 @@ if __name__ == "__main__":
     results = parser.parse_args()
 
     #call function
-    edge_detect_cam(results.res)
+    face_landmark_detect_cam(results.res)
