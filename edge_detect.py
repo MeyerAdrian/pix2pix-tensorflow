@@ -1,10 +1,11 @@
+
 import numpy as np
 import cv2
 import argparse		
 
 
 
-def edge_detect_filter(img, preblur_size=3, mode=2, can_min_val=100, can_max_val=200, scale=6, sob_size=1, tresh=0, *args):
+def edge_detect_filter(img, preblur_size=1, mode=2, can_min_val=100, can_max_val=200, scale=6, sob_size=1, tresh=0, *args):
 
 
 	#convert to grayscale
@@ -60,6 +61,9 @@ def edge_detect_filter(img, preblur_size=3, mode=2, can_min_val=100, can_max_val
 
 
 #argument parser
+
+
+######defaults out of date
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='OpenCV Canny Edge Detection Conversion')

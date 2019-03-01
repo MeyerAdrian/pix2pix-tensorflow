@@ -30,6 +30,7 @@ def inference_cam(input_model, output_dir, *args):
     _last = None
     n = 1
     use_preproc = 1
+    use_inf = 1
 
     while (True):
         #print (True)
@@ -92,16 +93,19 @@ def inference_cam(input_model, output_dir, *args):
         #check if numpy 
         if isinstance(_last, np.ndarray):
             #overwrite frame
-            frame = _last
+            
+            #check if use inference
+            if(use_inf):
+                frame = _last
         
 
         #display
-        cv2.imshow('Press "q" to close, "s" to Save, "d" to toggle Prepocessing', frame)
+        cv2.imshow('"q" Close, "s" Save, "d" Prepocessing, "f" Inferencing', frame)
 
 
 
         #write image function
-        if cv2.waitKey(66) == ord('s'):
+        if cv2.waitKey(10) == ord('s'):
 
             image_file = os.path.join(output_dir, "img_{0}.jpg".format(str(n).zfill(4)))
             cv2.imwrite(image_file, frame)
@@ -113,15 +117,23 @@ def inference_cam(input_model, output_dir, *args):
 
 
         #toggle image preprocesing
-        if cv2.waitKey(66) == ord('d'):
+        if cv2.waitKey(10) == ord('d'):
             if(use_preproc):
                 use_preproc = 0
             else:
-                use_preproc = 1 
+                use_preproc = 1
+
+
+        #toggle inference
+        if cv2.waitKey(10) == ord('f'):
+            if(use_inf):
+                use_inf = 0
+            else:
+                use_inf = 1 
 
 
         #quit process
-        if cv2.waitKey(33) == ord('q'):
+        if cv2.waitKey(10) == ord('q'):
             #set value to break BG while loop
             lifetime_end.value = True
 
