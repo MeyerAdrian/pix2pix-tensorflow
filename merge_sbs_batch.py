@@ -32,7 +32,7 @@ def merge_sbs_batch(image_dir_a, image_dir_b, image_dir_c, output_dir, *args):
         c_images = iter(os.listdir(image_dir_c))
 
     end_reached = 0
-    n = 0
+    n = 1
 
     while not end_reached:
         try:

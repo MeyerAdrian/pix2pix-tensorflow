@@ -9,6 +9,9 @@ import edge_detect
 import serve
 import json
 
+import face_landmark_detect
+
+
 def inference_cam(input_model, output_dir, *args):
 
     ##### get res from input model dir
@@ -31,6 +34,11 @@ def inference_cam(input_model, output_dir, *args):
     n = 1
     use_preproc = 1
     use_inf = 1
+
+
+    #create bg image first outside loop
+    bg_img = face_landmark_detect.create_bg(img_res)
+
 
     while (True):
         #print (True)
@@ -64,7 +72,9 @@ def inference_cam(input_model, output_dir, *args):
         #image pre processing, filters
 
         if (use_preproc):
-            frame = edge_detect.edge_detect_filter(frame)
+            #frame = edge_detect.edge_detect_filter(frame)
+
+            frame = face_landmark_detect.face_landmark_detect(frame, bg_img, img_res)
         
 
 
