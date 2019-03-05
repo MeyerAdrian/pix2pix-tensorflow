@@ -8,8 +8,16 @@ import time
 import serve
 import json
 
+import sys
+import subprocess
+
 
 def inference_cam(input_model, output_dir, *args):
+
+
+
+    #start touchdesigner and photoshop
+    p = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Unrestricted", "./prelaunch_inference_webcam_touchdesigner.ps1"], stdout=sys.stdout)
 
 
     #set CUDA_VISIBLE_DEVICES
@@ -38,22 +46,19 @@ def inference_cam(input_model, output_dir, *args):
     #temp file (labeled image, in this case form touchdesigner)
     temp = os.path.join(os.path.dirname(__file__), '_temp_imgs/temp.jpg')
 
-    #safeity resizing
+    #initial frame read
     frame = cv2.imread(temp, 1)
-    frame = cv2.resize(frame, (img_res, img_res))
 
-    frame_int = frame
 
     #vars
     _last = None
     n = 1
-    use_inf = 0
 
 
 
     #while loop
 
-    while (True): 
+    while (True):
 
         #inference
 
@@ -76,17 +81,12 @@ def inference_cam(input_model, output_dir, *args):
         #check if numpy 
         if isinstance(_last, np.ndarray):
             #overwrite frame
-            
             frame = _last
 
-        
-        #check if use inference
-        if(use_inf == 0):
-            frame = frame_int
 
 
         #display
-        cv2.imshow('q Close, s Save, f Inference', frame)
+        cv2.imshow('q Close, s Save', frame)
         key = cv2.waitKey(1) & 0xFF
 
 
@@ -104,14 +104,6 @@ def inference_cam(input_model, output_dir, *args):
             #increase img counter
             n += 1
 
-
-
-        #toggle inferenceing
-        if key == ord('f'):
-            if(use_inf):
-                use_inf = 0
-            else:
-                use_inf = 1 
 
 
         #quit process

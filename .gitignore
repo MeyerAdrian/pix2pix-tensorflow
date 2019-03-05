@@ -1,6 +1,6 @@
 *.pyc
 tags
 test
-models
-.idea
+model
 _temp_imgs
+.idea
