@@ -15,6 +15,12 @@ import merge_sbs_batch
 
 
 def local_inference(input_model, use_sbs, input_dir, input_dir_label, output_dir, output_dir_sbs, *args):
+
+
+    #set CUDA_VISIBLE_DEVICES
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+    print("\nSet CUDA_VISIBLE_DEVICES = 1\n")
+
     
     print("\n")
     print("\nLocal inference started")

@@ -36,13 +36,16 @@ parser.add_argument("--trace_freq", type=int, default=0, help="trace execution e
 
 #write training images, original default 0
 parser.add_argument("--display_freq", type=int, default=200, help="write current training images every display_freq steps")
-parser.add_argument("--save_freq", type=int, default=5000, help="save model every save_freq steps, 0 to disable")
+
+#default 5000
+parser.add_argument("--save_freq", type=int, default=500, help="save model every save_freq steps, 0 to disable")
 
 parser.add_argument("--separable_conv", action="store_true", help="use separable convolutions in the generator")
 parser.add_argument("--aspect_ratio", type=float, default=1.0, help="aspect ratio of output images (width/height)")
 parser.add_argument("--lab_colorization", action="store_true", help="split input image into brightness (A) and color (B)")
 parser.add_argument("--batch_size", type=int, default=1, help="number of images in batch")
 parser.add_argument("-d", "--which_direction", type=str, default="BtoA", choices=["AtoB", "BtoA"])
+
 parser.add_argument("--ngf", type=int, default=64, help="number of generator filters in first conv layer")
 parser.add_argument("--ndf", type=int, default=64, help="number of discriminator filters in first conv layer")
 
@@ -64,6 +67,13 @@ EPS = 1e-12
 
 
 
+#set CUDA_VISIBLE_DEVICES
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+print("\nSet CUDA_VISIBLE_DEVICES = 1\n")
+
+
+
+#set initial resolution
 if (a.mode == "train"):
 
     first_img_path = os.listdir(a.input_dir)[0]
@@ -76,7 +86,6 @@ if (a.mode == "train"):
 
     a.scale_size = img_res
     CROP_SIZE = img_res
-
 
 
 

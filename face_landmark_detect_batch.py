@@ -9,7 +9,7 @@ import cv2
 import face_landmark_detect
 
 
-def face_landmark_detect_batch(input_dir, output_dir, *args):
+def face_landmark_detect_batch(input_dir, output_dir, blend, *args):
 
     print("Start Batch Processing.\n")
 
@@ -33,7 +33,7 @@ def face_landmark_detect_batch(input_dir, output_dir, *args):
         bg_img = face_landmark_detect.create_bg(img_res)
 
         #run detection function
-        out_img = face_landmark_detect.face_landmark_detect(img, bg_img, img_res)
+        out_img = face_landmark_detect.face_landmark_detect(img, bg_img, img_res, blend)
 
 
         #write image
@@ -56,9 +56,15 @@ if __name__ == "__main__":
                         dest='output_dir',
                         help='Output Directory',
                         required=True)
+    parser.add_argument('-b', '--blend',
+                        dest='blend',
+                        help='Blend Original',
+                        default=0,
+                        type=int,
+                        required=False)
 
     r = parser.parse_args()
 
 
     #call function
-    face_landmark_detect_batch(r.input_dir, r.output_dir)
+    face_landmark_detect_batch(r.input_dir, r.output_dir, r.blend)

@@ -1,51 +1,59 @@
-Rem "Paul Face" Landmark Training
-py .\pix2pix.py -m train^
- -i D:\Local_Data\Projects\Paul_Pix2Pix\Source\010_Paul_K\080_Crop_512_FaceLandmarks\020_SBS^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\010_Paul_K\080_Crop_512_FaceLandmarks\030_Checkpoint
+echo Setting CUDA DEVICES
+SET CUDA_VISIBLE_DEVICES=1
+echo
 
-echo 'Paul Face' Landmark Training Finished
+
+echo Start 'Adrian_EricLacombe' Training
+py .\pix2pix.py -m train^
+ -i D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\040_Adrian_EricLacombe_Mix_1K\010_FaceLandmark_1K\010_SBS^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\040_Adrian_EricLacombe_Mix_1K\010_FaceLandmark_1K\020_Checkpoint
+
+echo 'Adrian_EricLacombe' Training Finished
 echo XXXXXXXXXXXXXXXXX
 
 py .\pix2pix.py -m export^
- -c D:\Local_Data\Projects\Paul_Pix2Pix\Source\010_Paul_K\080_Crop_512_FaceLandmarks\030_Checkpoint^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\010_Paul_K\080_Crop_512_FaceLandmarks\040_ExportedModel
+ -c D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\040_Adrian_EricLacombe_Mix_1K\010_FaceLandmark_1K\020_Checkpoint^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\040_Adrian_EricLacombe_Mix_1K\010_FaceLandmark_1K\030_ExportedModel
 
-echo 'Paul Face' Landmark Export Finished
+echo 'Adrian_EricLacombe' Training Exported
 echo XXXXXXXXXXXXXXXXX
 
 
 
-Rem "Dark Faces" Face Landmark Training
+echo Resume 'Adrian_M' Training
 py .\pix2pix.py -m train^
- -i D:\Local_Data\Projects\Paul_Pix2Pix\Source\050_Dark_Faces\020_FaceLandmarks_512\020_SBS^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\050_Dark_Faces\020_FaceLandmarks_512\030_Checkpoint
+ -i D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\010_Adrian_M\050_FaceLandmarks_1K\020_SBS^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\010_Adrian_M\050_FaceLandmarks_1K\030_Checkpoint^
+ -c D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\010_Adrian_M\050_FaceLandmarks_1K\030_Checkpoint
 
-echo 'Dark Faces' Landmark Training Finished
+echo 'Adrian_M' Training Finished
 echo XXXXXXXXXXXXXXXXX
 
 py .\pix2pix.py -m export^
- -c D:\Local_Data\Projects\Paul_Pix2Pix\Source\050_Dark_Faces\020_FaceLandmarks_512\030_Checkpoint^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\050_Dark_Faces\020_FaceLandmarks_512\040_ExportedModel
+ -c D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\010_Adrian_M\050_FaceLandmarks_1K\030_Checkpoint^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\010_Adrian_M\050_FaceLandmarks_1K\040_ExportedModel
 
-echo 'Dark Faces' Landmark Export Finished
+echo 'Adrian_M' Training Exported
 echo XXXXXXXXXXXXXXXXX
 
 
 
-Rem "Dark Faces Paul Mix" Face Landmark Training
+echo Start 'EricLacombe' Training
 py .\pix2pix.py -m train^
- -i D:\Local_Data\Projects\Paul_Pix2Pix\Source\060_Dark_Faces_Paul_Mix\010_FaceLandmarks_512\020_SBS^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\060_Dark_Faces_Paul_Mix\010_FaceLandmarks_512\030_Checkpoint
+ -i D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\030_EricLacombe_1K\030_FaceLandmark_1K\020_SBS^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\030_EricLacombe_1K\030_FaceLandmark_1K\030_Checkpoint
 
-echo 'Dark Faces Paul Mix' Landmark Training Finished
+echo 'EricLacombe' Training Finished
 echo XXXXXXXXXXXXXXXXX
 
 py .\pix2pix.py -m export^
- -c D:\Local_Data\Projects\Paul_Pix2Pix\Source\060_Dark_Faces_Paul_Mix\010_FaceLandmarks_512\030_Checkpoint^
- -o D:\Local_Data\Projects\Paul_Pix2Pix\Source\060_Dark_Faces_Paul_Mix\010_FaceLandmarks_512\040_ExportedModel
+ -c D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\030_EricLacombe_1K\030_FaceLandmark_1K\030_Checkpoint^
+ -o D:\Local_Data\Projects\Paul_Pix2Pix\Source_1K\030_EricLacombe_1K\030_FaceLandmark_1K\040_ExportedModel
 
-echo 'Dark Faces Paul Mix' Landmark Export Finished
+echo 'EricLacombe' Training Exported
 echo XXXXXXXXXXXXXXXXX
+
+
 
 
 
