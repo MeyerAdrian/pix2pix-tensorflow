@@ -17,12 +17,12 @@ def inference_cam(input_model, output_dir, *args):
 
 
     #start touchdesigner and photoshop
-    p = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Unrestricted", "./prelaunch_inference_webcam_touchdesigner.ps1"], stdout=sys.stdout)
+    p = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Unrestricted", "./touchdesigner_photoshop/prelaunch_td_ps.ps1"], stdout=sys.stdout)
 
 
     #set CUDA_VISIBLE_DEVICES
-    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-    print("\nSet CUDA_VISIBLE_DEVICES = 1\n")
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    print("\nSet CUDA_VISIBLE_DEVICES = 0\n")
 
 
 
