@@ -16,8 +16,8 @@ def inference_cam(input_model, output_dir, cam_id, cam_width, cam_height, perf_m
 
 
     #set CUDA_VISIBLE_DEVICES
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    print("\nSet CUDA_VISIBLE_DEVICES = 0\n")
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+    print("\nSet CUDA_VISIBLE_DEVICES = 1\n")
 
 
 
