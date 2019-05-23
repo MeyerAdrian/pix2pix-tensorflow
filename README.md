@@ -1,3 +1,25 @@
+# pix2pix-tensorflow experiments
+
+Customized pix2pix-tensorflow, added 512x512px and 1024x1024px support.
+Webcam to pixx2pix inferencing, live Photoshop drawing to pix2pix and other fun tools...
+
+Thanks to Seyed Ahmad Hosseini for helping out with this!
+
+
+Some artworks cretaed during experimenting:
+
+
+<img src="img/_portrait_v022_notext.png" width="256px"/>
+
+<img src="img/paul_abstract_v003.png" width="256px"/>
+
+<img src="img/noface_v002.png" width="256px"/>
+
+<img src="img/adrian_dark_v001.png" width="256px"/>
+
+
+
+
 # pix2pix-tensorflow
 
 Based on [pix2pix](https://phillipi.github.io/pix2pix/) by Isola et al.
