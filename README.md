@@ -6,7 +6,7 @@ Webcam to *pix2pix* inferencing, live Photoshop drawing to *pix2pix* and other f
 Thanks to Seyed Ahmad Hosseini for helping out with this!
 
 
-Some artworks cretaed during experimenting:
+Some artworks created during experimenting:
 
 
 <img src="img/_portrait_v022_notext.png" width="1024px"/>
@@ -18,7 +18,7 @@ Some artworks cretaed during experimenting:
 <img src="img/adrian_dark_v001.png" width="1024px"/>
 
 
-  
+
 
 # pix2pix-tensorflow
 
